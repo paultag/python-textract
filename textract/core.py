@@ -52,3 +52,7 @@ class Textract(object):
             yield entry
             entry = Entry.from_attribute(attribute)
         yield entry
+
+    def populate(self, constructor, rows):
+        for entry in self.entries(rows):
+            yield constructor(entry)

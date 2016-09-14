@@ -63,3 +63,24 @@ def test_filter():
     assert len(list(two.attributes)) == 2
     assert len(list(two.attributes.by_type(Name))) == 1
     assert len(list(two.attributes.by_type(Star))) == 1
+
+
+class Person(object):
+    def __init__(self, names, stars):
+        self.names = names
+        self.stars = stars
+
+    @classmethod
+    def from_entry(self, entry):
+        return Person(
+            list(entry.attributes.by_type(Name)),
+            list(entry.attributes.by_type(Star)),
+        )
+
+def test_populate():
+    one, two = list(t.populate(Person.from_entry, data))
+    assert len(one.names) == 2
+    assert len(two.names) == 1
+
+    assert len(one.stars) == 0
+    assert len(two.stars) == 1
