@@ -7,6 +7,7 @@ data = [
     ["name", "1111", "legal", "Joe", "Smith"],
     ["name", "1111", "alias", "Jose", "Smithe"],
     ["name", "1112", "alias", "Jose", "Smith"],
+    ["star", "1112", "gold"],
 ]
 
 
@@ -19,6 +20,16 @@ class Name(object):
         self.given = given
         self.family = family
 
+class Star(object):
+    def __init__(self, entry=None, type_=None):
+        self.entry = entry
+        self.type = type_
+
+
+@t.handle("star")
+def star(entry, type_):
+    return Star(entry=entry, type_=type_)
+
 
 @t.handle("name")
 def foo(entry, type_, given, family):
@@ -27,24 +38,27 @@ def foo(entry, type_, given, family):
 
 def test_grouper():
     entries = t.entries(data)
-    a = next(entries)
-    assert len(a.attributes) == 2
-    legal, alias = a.attributes
+    entities = list(entries)
+    assert len(entities) == 2
+    one, two = entities
 
-    assert legal.given == "Joe"
-    assert legal.family == "Smith"
-    assert legal.type == "legal"
+    assert len(one.attributes) == 2
+    assert len(two.attributes) == 2
 
-    assert alias.given == "Jose"
-    assert alias.family == "Smithe"
-    assert alias.type == "alias"
+    joe, jose = one.attributes
+    assert joe.given == "Joe"
+    assert jose.given == "Jose"
 
-    a = next(entries)
-    assert len(a.attributes) == 1
-    alias, = a.attributes
-    assert alias.given == "Jose"
-    assert alias.family == "Smith"
-    assert alias.type == "alias"
 
-    with pytest.raises(StopIteration):
-        next(entries)
+def test_filter():
+    entries = t.entries(data)
+    entities = list(entries)
+    assert len(entities) == 2
+    one, two = entities
+
+    assert len(list(one.attributes)) == 2
+    assert len(list(one.attributes.by_type(Name))) == 2
+
+    assert len(list(two.attributes)) == 2
+    assert len(list(two.attributes.by_type(Name))) == 1
+    assert len(list(two.attributes.by_type(Star))) == 1

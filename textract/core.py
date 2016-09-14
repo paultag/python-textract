@@ -1,8 +1,12 @@
+class Attributes(list):
+    def by_type(self, class_):
+        return filter(lambda x: isinstance(x, class_), self)
+
 
 class Entry(object):
     def __init__(self, id):
         self.id = id
-        self.attributes = []
+        self.attributes = Attributes()
 
     def __str__(self):
         return "<Entry: {id}>".format(id=self.id)
@@ -40,7 +44,7 @@ class Textract(object):
         for attribute in rows:
             if attribute.entry == entry.id:
                 entry.add(attribute)
-                yield entry
                 continue
+            yield entry
             entry = Entry.from_attribute(attribute)
         yield entry
