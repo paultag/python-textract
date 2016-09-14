@@ -32,7 +32,11 @@ class Textract(object):
         return decorator
 
     def process_row(self, row):
-        return self.handlers[row[0]](*row[1:])
+        entry = self.handlers[row[0]](*row[1:])
+        if not hasattr(entry, "entry"):
+            raise AttributeError("Type '{}' has no attribute 'entry'".format(
+                entry.__class__))
+        return entry
 
     def process_rows(self, rows):
         for row in rows:

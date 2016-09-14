@@ -20,6 +20,7 @@ class Name(object):
         self.given = given
         self.family = family
 
+
 class Star(object):
     def __init__(self, entry=None, type_=None):
         self.entry = entry
